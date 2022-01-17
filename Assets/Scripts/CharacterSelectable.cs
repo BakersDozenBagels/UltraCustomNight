@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -14,6 +13,16 @@ public class CharacterSelectable : KMSelectable
     private Renderer _outline;
 
     /// <summary>
+    /// The difficulty rating of this animatronic.
+    /// </summary>
+    [SerializeField]
+    private int _difficulty;
+    /// <summary>
+    /// The difficulty rating of this animatronic.
+    /// </summary>
+    public int Difficulty { get { return _difficulty; } }
+
+    /// <summary>
     /// Holds the <see cref="KMAudio"/> for this character. Set in <see cref="Start"/>.
     /// </summary>
     private KMAudio _audio;
@@ -21,8 +30,8 @@ public class CharacterSelectable : KMSelectable
     /// <summary>
     /// Enapsulates a callback for when a <see cref="CharacterSelectable"/> changes state.
     /// </summary>
-    /// <param name="On"><code>true</code> if the character is being turned on.</param>
-    public delegate void OnUpdateStateHandler(bool On);
+    /// <param name="on"><code>true</code> if the character is being turned on.</param>
+    public delegate void OnUpdateStateHandler(bool on);
 
     /// <summary>
     /// This characters callback for when it changes state.
@@ -48,7 +57,7 @@ public class CharacterSelectable : KMSelectable
             _currentState = value;
             SetOutlineColor();
 
-            if(OnUpdateState != null)
+            if(OnUpdateState != null && value != State.ForcedOff)
                 OnUpdateState(value == State.ForcedOn || value == State.On);
         }
     }
@@ -100,7 +109,7 @@ public class CharacterSelectable : KMSelectable
             case OutlineColor.Red:
                 return new Color(0.9f, 0.1f, 0.1f);
             case OutlineColor.Gray:
-                return new Color(0.3f, 0.3f, 0.3f);
+                return new Color(0.5f, 0.5f, 0.5f);
             default:
                 throw new InvalidOperationException("Bad OutlineColor " + c);
         }
@@ -159,7 +168,7 @@ public class CharacterSelectable : KMSelectable
         Red,
         Green,
         Black,
-        Gray // Unused, for ForcedOff
+        Gray
     }
 
     /// <summary>
@@ -170,6 +179,6 @@ public class CharacterSelectable : KMSelectable
         On,
         Off,
         ForcedOn,
-        ForcedOff // Unused
+        ForcedOff
     }
 }
