@@ -3,12 +3,12 @@ using Rng = UnityEngine.Random;
 
 class Chica : Animatronic
 {
-    private int _currentCam = 5;
+    private int _currentCam = 2;
 
     public Chica(UltraCustomNightScript instance) : base(instance)
     {
-        Instance.Log("Chica is coming to attack! Watch out for cam 3.");
-        Instance.SetCameraFlag(CameraFlag.ChicaCam5, true);
+        Instance.Log("Chica is coming to attack! Watch out for your right hallway.");
+        Instance.SetCameraFlag(CameraFlag.BonnieCam2, true);
         Instance.AddCoroutineNow(WaitToMove());
     }
 
@@ -22,47 +22,34 @@ class Chica : Animatronic
     {
         switch(_currentCam)
         {
-            case 3:
-                switch(Rng.Range(0, 3))
-                {
-                    case 0:
-                        Instance.SetCameraFlag(CameraFlag.ChicaCam3, false);
-                        Instance.SetCameraFlag(CameraFlag.ChicaCam4, true);
-                        _currentCam = 4;
-                        break;
-                    case 1:
-                        Instance.SetCameraFlag(CameraFlag.ChicaCam3, false);
-                        Instance.SetCameraFlag(CameraFlag.ChicaCam5, true);
-                        _currentCam = 5;
-                        break;
-                    case 2:
-                        Instance.SetCameraFlag(CameraFlag.ChicaCam3, false);
-                        Instance.SetCameraFlag(CameraFlag.ChicaCam3Attack, true);
-                        _currentCam = 0;
-                        yield return WaitFor(Rng.Range(10f, 15f));
-                        if(Instance.GetDoorClosed(UltraCustomNightScript.DoorPosition.Front))
-                            Instance.PlaySound(Constants.SOUND_BANG);
-                        else
-                        {
-                            Instance.Strike();
-                            Instance.Log("Strike from Chica!");
-                        }
-                        Instance.SetCameraFlag(CameraFlag.ChicaCam3Attack, false);
-                        Instance.SetCameraFlag(CameraFlag.ChicaCam3, true);
-                        _currentCam = 3;
-                        break;
-                }
-                break;
-            case 4:
-                Instance.SetCameraFlag(CameraFlag.ChicaCam4, false);
-                Instance.SetCameraFlag(CameraFlag.ChicaCam3, true);
+            case 2:
                 _currentCam = 3;
+                Instance.SetCameraFlag(CameraFlag.BonnieCam2, false);
+                Instance.SetCameraFlag(CameraFlag.BonnieCam3, true);
+                break;
+            case 3:
+                _currentCam = 5;
+                Instance.SetCameraFlag(CameraFlag.BonnieCam3, false);
+                Instance.SetCameraFlag(CameraFlag.BonnieCam5, true);
                 break;
             case 5:
-
-                Instance.SetCameraFlag(CameraFlag.ChicaCam5, false);
-                Instance.SetCameraFlag(CameraFlag.ChicaCam3, true);
-                _currentCam = 3;
+                _currentCam = 7;
+                Instance.SetCameraFlag(CameraFlag.BonnieCam5, false);
+                Instance.SetCameraFlag(CameraFlag.BonnieCam7, true);
+                break;
+            case 7:
+                _currentCam = 0;
+                Instance.SetCameraFlag(CameraFlag.BonnieCam7, false);
+                yield return WaitFor(Rng.Range(5f, 10f));
+                if(Instance.GetDoorClosed(UltraCustomNightScript.DoorPosition.Right))
+                    Instance.PlaySound(Constants.SOUND_BANG);
+                else
+                {
+                    Instance.Strike();
+                    Instance.Log("Strike from Chica!");
+                }
+                _currentCam = 2;
+                Instance.SetCameraFlag(CameraFlag.BonnieCam2, true);
                 break;
         }
 

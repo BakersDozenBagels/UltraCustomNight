@@ -34,6 +34,14 @@ public class UltraCustomNightScript : MonoBehaviour
     /// </summary>
     public GameObject BBJJPrefab;
     /// <summary>
+    /// Holds the prefab for Nightmare BB.
+    /// </summary>
+    public GameObject NBBPrefab;
+    /// <summary>
+    /// Holds the prefab for the special animatronics.
+    /// </summary>
+    public GameObject SpecialPrefab;
+    /// <summary>
     /// Holds the text for Funtime Foxy.
     /// </summary>
     public TextMesh FuntimeFoxyText;
@@ -46,6 +54,7 @@ public class UltraCustomNightScript : MonoBehaviour
     /// Set in <see cref="Awake"/>.
     /// </summary>
     private KMSelectable _selectable;
+
     /// <summary>
     /// Set in <see cref="Awake"/>.
     /// </summary>
@@ -61,7 +70,7 @@ public class UltraCustomNightScript : MonoBehaviour
     /// <summary>
     /// Set in <see cref="Awake"/>.
     /// </summary>
-    private CamsHelper _cams;
+    public CamsHelper Cams { get; private set; }
 
     /// <summary>
     /// Set by TP via Reflection.
@@ -109,11 +118,11 @@ public class UltraCustomNightScript : MonoBehaviour
     /// <summary>
     /// All module names that this module should ignore.
     /// </summary>
-    private string[] _ignored;
+    public string[] Ignored { get; private set; }
     /// <summary>
     /// The last camera that was selected.
     /// </summary>
-    public int LastCamSelected { get; private set; }
+    public int LastCamSelected { get; set; }
     /// <summary>
     /// Whether this module has had its unique animatronics assigned.
     /// </summary>
@@ -121,7 +130,7 @@ public class UltraCustomNightScript : MonoBehaviour
     /// <summary>
     /// Whether this module is allowed to use this animatronic.
     /// </summary>
-    private bool _mangleAllowed, _nightmareBonnieAllowed, _circusBabyAllowed, _balloraAllowed, _funtimeFreddyAllowed, _funtimeFoxyAllowed, _puppetAllowed, _BBAllowed, _JJAllowed;
+    private bool _mangleAllowed, _circusBabyAllowed, _balloraAllowed, _funtimeFreddyAllowed, _nightmareBBAllowed;
 
     /// <summary>
     /// The factor with which to scale all wait times.
@@ -132,6 +141,9 @@ public class UltraCustomNightScript : MonoBehaviour
 #else
     public float TimeAdjust = 4.5f;
 #endif
+
+    [SerializeField]
+    private GameObject _goldenFreddy;
 
     #region Unity Lifecycle
     /// <summary>
@@ -146,7 +158,7 @@ public class UltraCustomNightScript : MonoBehaviour
         _module = GetComponent<KMBombModule>();
         BombInfo = GetComponent<KMBombInfo>();
         GameInfo = GetComponent<KMGameInfo>();
-        _cams = GetComponentInChildren<CamsHelper>();
+        Cams = GetComponentInChildren<CamsHelper>();
 
         _setupScreen.SetActive(true);
         _camScreen.SetActive(true);
@@ -160,9 +172,11 @@ public class UltraCustomNightScript : MonoBehaviour
     /// </summary>
     private void Start()
     {
+        OnCameraChange += b => { };
+
         MangleThreshold = BombInfo.GetTime() / 20f;
 
-        _ignored = _boss.GetIgnoredModules(_module);
+        Ignored = _boss.GetIgnoredModules(_module);
         StartCoroutine(WatchForSolves());
 
         _selectable.Children = _setupScreen.GetComponentsInChildren<KMSelectable>();
@@ -191,24 +205,20 @@ public class UltraCustomNightScript : MonoBehaviour
             };
         }
 
-        _camSel.OnInteract += () => { LastCamSelected = 0; _camSel.AddInteractionPunch(0.1f); _audio.PlaySoundAtTransform(Constants.SOUND_STATIC, _camSel.transform); UpdateScreen(1); return false; };
-        _ventSel.OnInteract += () => { LastCamSelected = 0; _ventSel.AddInteractionPunch(0.1f); _audio.PlaySoundAtTransform(Constants.SOUND_STATIC, _ventSel.transform); UpdateScreen(2); return false; };
+        _camSel.OnInteract += () => { OnCameraChange(false); LastCamSelected = 0; _camSel.AddInteractionPunch(0.1f); _audio.PlaySoundAtTransform(Constants.SOUND_STATIC, _camSel.transform); UpdateScreen(1); return false; };
+        _ventSel.OnInteract += () => { OnCameraChange(false); LastCamSelected = 0; _ventSel.AddInteractionPunch(0.1f); _audio.PlaySoundAtTransform(Constants.SOUND_STATIC, _ventSel.transform); UpdateScreen(2); return false; };
 
         foreach(CameraSelectable sel in GetComponentsInChildren<CameraSelectable>())
-            sel.OnCameraSelect += i => { _cams.SetCam(i); LastCamSelected = i; };
+            sel.OnCameraSelect += i => { Cams.SetCam(i); LastCamSelected = i; OnCameraChange(true); };
 
         if(!_assignedUniques)
         {
             UltraCustomNightScript[] ucns = _instances.Where(u => u != null && !u._assignedUniques).ToArray();
             ucns.PickRandom()._mangleAllowed = true;
-            ucns.PickRandom()._nightmareBonnieAllowed = true;
             ucns.PickRandom()._circusBabyAllowed = true;
             ucns.PickRandom()._balloraAllowed = true;
             ucns.PickRandom()._funtimeFreddyAllowed = true;
-            ucns.PickRandom()._funtimeFoxyAllowed = true;
-            ucns.PickRandom()._puppetAllowed = true;
-            ucns.PickRandom()._BBAllowed = true;
-            ucns.PickRandom()._JJAllowed = true;
+            ucns.PickRandom()._nightmareBBAllowed = true;
             foreach(UltraCustomNightScript ucn in ucns)
                 ucn._assignedUniques = true;
         }
@@ -235,28 +245,27 @@ public class UltraCustomNightScript : MonoBehaviour
             sel.OnUpdateState += GenerateToggle(sel);
             if((!_mangleAllowed || IsZenModeActive || IsTPActive) && sel.gameObject.name == "Mangle")
                 sel.CurrentState = CharacterSelectable.State.ForcedOff;
-            if((!_nightmareBonnieAllowed || IsTPActive) && sel.gameObject.name == "NightmareBonnie")
-                sel.CurrentState = CharacterSelectable.State.ForcedOff;
             if((!_circusBabyAllowed || IsTPActive || IsVrEnabled) && sel.gameObject.name == "CircusBaby")
-                sel.CurrentState = CharacterSelectable.State.ForcedOff;
-            if(!_balloraAllowed && sel.gameObject.name == "Ballora")
                 sel.CurrentState = CharacterSelectable.State.ForcedOff;
             if(!_funtimeFreddyAllowed && sel.gameObject.name == "FuntimeFreddy")
                 sel.CurrentState = CharacterSelectable.State.ForcedOff;
-            if(!_funtimeFoxyAllowed && sel.gameObject.name == "FuntimeFoxy")
+            if(_balloraAllowed && sel.gameObject.name == "FuntimeFoxy")
                 sel.CurrentState = CharacterSelectable.State.ForcedOff;
-            if((!_puppetAllowed || IsTPActive || IsVrEnabled) && sel.gameObject.name == "ThePuppet")
+            if((!_nightmareBBAllowed || IsTPActive || IsVrEnabled) && sel.gameObject.name == "Ballora")
                 sel.CurrentState = CharacterSelectable.State.ForcedOff;
-            if((!_BBAllowed || IsTPActive || IsVrEnabled) && sel.gameObject.name == "BB")
+            if((IsVrEnabled || IsTPActive) && sel.gameObject.name == "ThePuppet")
                 sel.CurrentState = CharacterSelectable.State.ForcedOff;
-            if((!_JJAllowed || IsTPActive || IsVrEnabled) && sel.gameObject.name == "JJ")
+            if(IsTPActive && (sel.gameObject.name == "BB" || sel.gameObject.name == "JJ"))
                 sel.CurrentState = CharacterSelectable.State.ForcedOff;
         }
 
 #if !UNITY_EDITOR
-        while(_currentDR < 7)
+        if(!IsZenModeActive)
         {
-            GetComponentsInChildren<CharacterSelectable>().PickRandom().CurrentState = CharacterSelectable.State.ForcedOn;
+            while(_currentDR < 7)
+            {
+                GetComponentsInChildren<CharacterSelectable>().PickRandom().CurrentState = CharacterSelectable.State.ForcedOn;
+            }
         }
 #endif
 
@@ -291,12 +300,12 @@ public class UltraCustomNightScript : MonoBehaviour
     /// <returns>The coroutine.</returns>
     private IEnumerator WatchForSolves()
     {
-        int requiredSolves = BombInfo.GetSolvableModuleNames().Count(n => n != "Ultra Custom Night" && !_ignored.Contains(n));
+        int requiredSolves = BombInfo.GetSolvableModuleNames().Count(n => n != "Ultra Custom Night" && !Ignored.Contains(n));
 
         while(!_isSolved)
         {
             yield return new WaitForSeconds(1f);
-            int newCount = BombInfo.GetSolvedModuleNames().Count(n => n != "Ultra Custom Night" && !_ignored.Contains(n));
+            int newCount = BombInfo.GetSolvedModuleNames().Count(n => n != "Ultra Custom Night" && !Ignored.Contains(n));
             if(!_hasStarted && newCount >= 1)
             {
                 _hasStarted = true;
@@ -308,6 +317,8 @@ public class UltraCustomNightScript : MonoBehaviour
                 _module.HandlePass();
                 StopAllCoroutines();
                 _isSolved = true;
+                if(Destroy != null)
+                    Destroy();
             }
         }
     }
@@ -321,7 +332,7 @@ public class UltraCustomNightScript : MonoBehaviour
         _camScreen.SetActive(false);
         _ventScreen.SetActive(false);
         _basicScreen.SetActive(true);
-        _cams.SetCam();
+        Cams.SetCam();
         List<KMSelectable> sels;
         switch(id)
         {
@@ -408,7 +419,7 @@ public class UltraCustomNightScript : MonoBehaviour
     /// <param name="value">The value to set the flag to.</param>
     public void SetCameraFlag(CameraFlag flag, bool value)
     {
-        _cams.SetMiscObject(flag, value);
+        Cams.SetMiscObject(flag, value);
     }
 
     /// <summary>
@@ -420,6 +431,17 @@ public class UltraCustomNightScript : MonoBehaviour
         if(_isSolved)
             return;
         _audio.PlaySoundAtTransform(name, transform);
+    }
+
+    /// <summary>
+    /// Plays a game sound.
+    /// </summary>
+    /// <param name="sfx">The sound effect to play.</param>
+    internal void PlayGameSound(KMSoundOverride.SoundEffect sfx)
+    {
+        if(_isSolved)
+            return;
+        _audio.PlayGameSoundAtTransform(sfx, transform);
     }
 
     private readonly List<DoorPosition> _closed = new List<DoorPosition>();
@@ -443,6 +465,15 @@ public class UltraCustomNightScript : MonoBehaviour
     {
         return Instantiate(orig);
     }
+
+    public void SetGoldenFreddy(bool on)
+    {
+        _goldenFreddy.SetActive(on);
+    }
+
+    public Action<bool> OnCameraChange;
+
+    public new event Action Destroy;
 #endregion
 
     /// <summary>
@@ -461,14 +492,25 @@ public class UltraCustomNightScript : MonoBehaviour
             TimeAdjust *= 3f;
 #endif
 
+        bool allOn = true;
+        //bool allOn = false;
+
         foreach(CharacterSelectable sel in GetComponentsInChildren<CharacterSelectable>())
+        {
             if(sel.CurrentState == CharacterSelectable.State.On || sel.CurrentState == CharacterSelectable.State.ForcedOn)
                 Animatronic.GetByName(sel.gameObject.name, this);
+            else
+                allOn = false;
+        }
+
+        if(allOn)
+            new SpecialAnimatronics(this);
 
         _setupScreen.SetActive(false);
         _camsScreen.SetActive(true);
 
         UpdateScreen(1);
+        SetGoldenFreddy(false);
     }
 
     /// <summary>

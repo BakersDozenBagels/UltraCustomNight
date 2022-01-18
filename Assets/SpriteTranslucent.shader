@@ -29,13 +29,14 @@
              {
                  float4 vertex : POSITION;
                  float2 uv : TEXCOORD0;
+				 fixed4 c : COLOR;
              };
  
              struct v2f
              {
                  float2 uv : TEXCOORD0;
-                 UNITY_FOG_COORDS(1)
                  float4 vertex : SV_POSITION;
+				 fixed4 c : COLOR;
              };
  
              sampler2D _MainTex;
@@ -47,6 +48,7 @@
                  v2f o;
                  o.vertex = UnityObjectToClipPos(v.vertex);
                  o.uv = TRANSFORM_TEX(v.uv, _MainTex);
+				 o.c = v.c;
                  return o;
              }
  
@@ -54,6 +56,7 @@
              {
                  // sample the texture
                  fixed4 col = tex2D(_MainTex, i.uv);
+				 col *= i.c;
 				 col.a *= _Opacity;
                  return col;
              }

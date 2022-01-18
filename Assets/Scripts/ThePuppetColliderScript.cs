@@ -27,6 +27,12 @@ public class ThePuppetColliderScript : MonoBehaviour
 
     private void Update()
     {
+        if(Input.mousePosition.x < 0 || Input.mousePosition.y < 0 || Input.mousePosition.x > Screen.width || Input.mousePosition.y > Screen.height)
+        {
+            MouseExit();
+            return;
+        }
+
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         foreach(RaycastHit hit in Physics.RaycastAll(ray))
         {

@@ -12,12 +12,46 @@ class BB : Animatronic
     private bool _handled, _removed;
     private GameObject _cover, _obj;
 
+    private KMSelectable.OnInteractHandler _f;
+
     public BB(UltraCustomNightScript instance, bool jj) : base(instance)
     {
         Instance.Log("{0} is coming to attack! Watch out for other modules.", jj ? "JJ" : "BB");
         _jj = jj;
         Instance.AddCoroutineNow(Move());
         Instance.AddCoroutineNow(Update());
+        Instance.Destroy += () => { Destroy(); };
+
+        _f = () =>
+        {
+            if(_currentModule != _obj.GetComponent<KMBombModule>() || _handled)
+                return true;
+
+            if(_jj)
+            {
+                Instance.Log("Strike from JJ!");
+                Instance.Strike();
+                _handled = true;
+            }
+            else
+            {
+                Object.Destroy(_cover);
+                _currentModule = null;
+                _selected.Remove(_obj);
+                _handled = true;
+                _removed = true;
+            }
+            return true;
+        };
+    }
+
+    private void Destroy()
+    {
+        if(!_removed)
+        {
+            Object.Destroy(_cover);
+            _removed = true;
+        }
     }
 
     private IEnumerator Update()
@@ -39,7 +73,7 @@ class BB : Animatronic
             yield break;
         }
 
-        _currentModule = Object.FindObjectsOfType<KMBombModule>().Where(m => !_selected.Contains(m.gameObject)).PickRandom();
+        _currentModule = Object.FindObjectsOfType<KMBombModule>().Where(m => !_selected.Contains(m.gameObject) && !Instance.Ignored.Contains(m.ModuleDisplayName) && m.ModuleDisplayName != "Ultra Custom Night").PickRandom();
         _obj = _currentModule.gameObject;
         _selected.Add(_obj);
         _cover = Instance.PublicInstantiate(Instance.BBJJPrefab);
@@ -49,29 +83,10 @@ class BB : Animatronic
         _cover.transform.localScale = Vector3.one;
         _cover.GetComponentInChildren<Renderer>().material.color = _jj ? Color.magenta : Color.blue;
         _removed = false;
-        _obj.GetComponent<KMSelectable>().OnInteract += () =>
-        {
-            if(_currentModule != _obj.GetComponent<KMBombModule>() || _handled)
-                return true;
-
-            if(_jj)
-            {
-                Instance.Log("Strike from JJ!");
-                Instance.Strike();
-                _handled = true;
-            }
-            else
-            {
-                Object.Destroy(_cover);
-                _currentModule = null;
-                _selected.Remove(_obj);
-                _handled = true;
-                _removed = true;
-            }
-            return true;
-        };
+        _obj.GetComponent<KMSelectable>().OnInteract += _f;
 
         Instance.Log("{0} is attacking!", _jj ? "JJ" : "BB");
+        Instance.PlaySound(Constants.SOUND_BB_JJ);
 
         yield return new WaitForSeconds(30f);
 
@@ -83,6 +98,7 @@ class BB : Animatronic
 
         if(!_removed)
         {
+            _obj.GetComponent<KMSelectable>().OnInteract -= _f;
             Object.Destroy(_cover);
             _currentModule = null;
             _selected.Remove(_obj);

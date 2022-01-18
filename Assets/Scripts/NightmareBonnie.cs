@@ -3,19 +3,13 @@ using Rng = UnityEngine.Random;
 
 class NightmareBonnie : Animatronic
 {
-    private int _currentState = 3;
-    private bool _alarmOn;
+    private int _currentCam = 5;
 
     public NightmareBonnie(UltraCustomNightScript instance) : base(instance)
     {
-        Instance.Log("Nightmare Bonnie is coming to attack! Listen close.");
+        Instance.Log("Nightmare Bonnie is coming to attack! Watch out for cam 3.");
+        Instance.SetCameraFlag(CameraFlag.ChicaCam5, true);
         Instance.AddCoroutineNow(WaitToMove());
-        instance.GameInfo.OnAlarmClockChange += s => Alarm(s);
-    }
-
-    private void Alarm(bool on)
-    {
-        _alarmOn |= on;
     }
 
     private IEnumerator WaitToMove()
@@ -26,30 +20,53 @@ class NightmareBonnie : Animatronic
 
     private IEnumerator Move()
     {
-        switch(_currentState)
+        switch(_currentCam)
         {
             case 3:
-                Instance.PlaySound(Constants.SOUND_NIGHTMARE_BONNIE_BANG1);
-                _currentState = 1;
-                break;
-            case 1:
-                Instance.PlaySound(Constants.SOUND_NIGHTMARE_BONNIE_BANG2);
-                _currentState = 2;
-                break;
-            case 2:
-                Instance.PlaySound(Constants.SOUND_NIGHTMARE_BONNIE_BANG3);
-                _alarmOn = false;
-                yield return WaitFor(15f);
-                if(!_alarmOn)
+                switch(Rng.Range(0, 3))
                 {
-                    Instance.Log("Strike from Nightmare Bonnie!");
-                    Instance.Strike();
+                    case 0:
+                        Instance.SetCameraFlag(CameraFlag.ChicaCam3, false);
+                        Instance.SetCameraFlag(CameraFlag.ChicaCam4, true);
+                        _currentCam = 4;
+                        break;
+                    case 1:
+                        Instance.SetCameraFlag(CameraFlag.ChicaCam3, false);
+                        Instance.SetCameraFlag(CameraFlag.ChicaCam5, true);
+                        _currentCam = 5;
+                        break;
+                    case 2:
+                        Instance.SetCameraFlag(CameraFlag.ChicaCam3, false);
+                        Instance.SetCameraFlag(CameraFlag.ChicaCam3Attack, true);
+                        _currentCam = 0;
+                        yield return WaitFor(Rng.Range(10f, 15f));
+                        if(Instance.GetDoorClosed(UltraCustomNightScript.DoorPosition.Front))
+                            Instance.PlaySound(Constants.SOUND_BANG);
+                        else
+                        {
+                            Instance.Strike();
+                            Instance.Log("Strike from Nightmare Bonnie!");
+                        }
+                        Instance.SetCameraFlag(CameraFlag.ChicaCam3Attack, false);
+                        Instance.SetCameraFlag(CameraFlag.ChicaCam3, true);
+                        _currentCam = 3;
+                        break;
                 }
-                _currentState = 3;
+                break;
+            case 4:
+                Instance.SetCameraFlag(CameraFlag.ChicaCam4, false);
+                Instance.SetCameraFlag(CameraFlag.ChicaCam3, true);
+                _currentCam = 3;
+                break;
+            case 5:
+
+                Instance.SetCameraFlag(CameraFlag.ChicaCam5, false);
+                Instance.SetCameraFlag(CameraFlag.ChicaCam3, true);
+                _currentCam = 3;
                 break;
         }
 
-        Instance.Log("Nightmare Bonnie knocked {0} time(s).", _currentState);
+        Instance.Log("Nightmare Bonnie is now at cam {0}.", _currentCam);
         yield return WaitFor(Rng.Range(2f, 3f));
 
         Instance.AddCoroutineNow(WaitToMove());

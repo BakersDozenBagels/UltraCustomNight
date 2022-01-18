@@ -81,4 +81,19 @@ public static class Constants
     /// The name of the sound of Funtime Freddy saying "Right."
     /// </summary>
     public const string SOUND_FUNTIME_FREDDY_RIGHT = "right";
+
+    /// <summary>
+    /// The name of the new challenger sound.
+    /// </summary>
+    public const string SOUND_NEW_CHALLENGER = "NewChallenger";
+
+    /// <summary>
+    /// The name of the BB/JJ laugh sound.
+    /// </summary>
+    public const string SOUND_BB_JJ = "BBJJ";
+
+    /// <summary>
+    /// The name of Lolbit's sound.
+    /// </summary>
+    public const string SOUND_LOL = "LOL";
 }

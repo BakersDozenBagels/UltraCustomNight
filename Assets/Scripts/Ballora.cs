@@ -12,6 +12,13 @@ public class Ballora : Animatronic
         Instance.AddCoroutineNow(WaitToMove());
         GameObject o = Instance.PublicInstantiate(Instance.BalloraPrefab);
         _script = o.GetComponent<BalloraScript>();
+
+        Instance.Destroy += () => { Destroy(); };
+    }
+
+    private void Destroy()
+    {
+        Object.Destroy(_script.gameObject);
     }
 
     private IEnumerator WaitToMove()

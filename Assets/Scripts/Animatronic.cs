@@ -68,19 +68,19 @@ public abstract class Animatronic
             case "NightmareFreddy":
                 return new NightmareFreddy(instance);
             case "NightmareBonnie":
-                return new NightmareBonnie(instance);
+                return new GoldenFreddy(instance);
             case "NightmareChica":
-                return new NightmareChica(instance);
+                return new FuntimeFoxy(instance);
             case "NightmareFoxy":
                 return new NightmareFoxy(instance);
             case "CircusBaby":
                 return new CircusBaby(instance);
             case "Ballora":
-                return new Ballora(instance);
+                return new NightmareBB(instance);
             case "FuntimeFreddy":
                 return new FuntimeFreddy(instance);
             case "FuntimeFoxy":
-                return new FuntimeFoxy(instance);
+                return new Ballora(instance);
             case "Springtrap":
                 return new Springtrap(instance);
             case "ThePuppet":

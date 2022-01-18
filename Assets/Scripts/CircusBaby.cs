@@ -22,6 +22,13 @@ public class CircusBaby : Animatronic
 
         _bomb = Instance.GetComponentsInParent<Component>().Where(c => c.GetType().Name.Contains("FloatingHoldable")).First();
         _info = _bomb.GetType().GetProperty("HoldState", BindingFlags.Public | BindingFlags.Instance);
+
+        Instance.Destroy += () => { Destroy(); };
+    }
+
+    private void Destroy()
+    {
+        Object.Destroy(_script.gameObject);
     }
 
     private IEnumerator WaitToMove()

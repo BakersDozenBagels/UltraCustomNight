@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 using Rng = UnityEngine.Random;
 
@@ -20,6 +19,13 @@ class ThePuppet : Animatronic
 
         _TPCS = _script.GetComponentInChildren<ThePuppetColliderScript>();
         _TPCS.OMO += d => _mousedown = d;
+
+        Instance.Destroy += () => { Destroy(); };
+    }
+
+    private void Destroy()
+    {
+        Object.Destroy(_script.gameObject);
     }
 
     private IEnumerator Move()
