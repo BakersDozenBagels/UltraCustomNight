@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using Rng = UnityEngine.Random;
 
-class ToyFreddy : Animatronic
+class ToyFreddy : Animatronic, ITP
 {
     private int _currentCam = 3;
 
@@ -76,11 +76,13 @@ class ToyFreddy : Animatronic
                 Instance.SetCameraFlag(CameraFlag.ToyFreddyCam10, false);
                 Instance.SetCameraFlag(CameraFlag.ToyFreddyCam11, false);
                 yield return WaitFor(Rng.Range(5f, 15f));
+                if(ForcedSolve)
+                    Instance.CloseDoor(_currentCam == 10 ? UltraCustomNightScript.DoorPosition.VLeft : UltraCustomNightScript.DoorPosition.VRight);
                 if(Instance.GetDoorClosed(_currentCam == 10 ? UltraCustomNightScript.DoorPosition.VLeft : UltraCustomNightScript.DoorPosition.VRight))
                     Instance.PlaySound(Constants.SOUND_BANG);
                 else
                 {
-                    Instance.Strike();
+                    Strike();
                     Instance.Log("Strike from Toy Freddy!");
                 }
 
@@ -93,5 +95,16 @@ class ToyFreddy : Animatronic
         yield return WaitFor(Rng.Range(2f, 3f));
 
         Instance.AddCoroutineNow(WaitToMove());
+    }
+
+    public IEnumerable HandleTwitchCommand(string command)
+    {
+        yield break;
+    }
+
+    public IEnumerable HandleTwitchForcedSolve()
+    {
+        ForcedSolve = true;
+        yield break;
     }
 }

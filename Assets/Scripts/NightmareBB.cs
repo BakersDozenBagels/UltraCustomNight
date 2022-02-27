@@ -29,7 +29,7 @@ class NightmareBB : Animatronic
         else
         {
             Instance.Log("Strike from Nightmare BB!");
-            Instance.Strike();
+            Strike();
         }
     }
 
@@ -50,7 +50,7 @@ class NightmareBB : Animatronic
         if(_isActive)
         {
             Instance.Log("Strike from Nightmare BB!");
-            Instance.Strike();
+            Strike();
         }
         _script.Inactive.SetActive(true);
         _script.Active.SetActive(false);

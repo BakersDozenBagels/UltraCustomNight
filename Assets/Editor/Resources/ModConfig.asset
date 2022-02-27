@@ -14,7 +14,13 @@ MonoBehaviour:
   id: ultraCustomNight
   title: Ultra Custom Night
   author: BakersDozenBagels
-  description: 
-  version: 0.1
+  description: 'This mod contains no jumpscares.
+
+
+    Evade animatronics of your choice as the bomb goes on!
+
+
+    TP supported.'
+  version: 1.1
   outputFolder: build
-  previewImage: {fileID: 2800000, guid: 08dd16377660758468cde478b42a329f, type: 3}
+  previewImage: {fileID: 2800000, guid: bb6bf30f4cfc5fa40b8782fdc477dff5, type: 3}

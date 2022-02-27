@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
+using Rng = UnityEngine.Random;
 
 public class SpecialAnimatronics : Animatronic
 {
@@ -17,7 +18,7 @@ public class SpecialAnimatronics : Animatronic
     private IEnumerator WaitToActivate()
     {
 #if !UNITY_EDITOR
-        yield return new WaitForSeconds(0.1f); // 300f
+        yield return new WaitForSeconds(Rng.Range(5f, 10f)); // 300f
 #endif
 
         Instance.AddCoroutineToQueue(Activate());
@@ -64,7 +65,7 @@ public class SpecialAnimatronics : Animatronic
         // Lolbit, !Nightmare BB, !Golden Freddy, Withered Chica, Withered Bonnie
         Action[] anims = new Action[] {
             () => { new NightmareBonnie(Instance); },
-            () => { new FuntimeFoxy(Instance); },
+            () => { new NightmareChica(Instance); },
             () => { new Lolbit(Instance, _script); },
             () => { new WitheredChica(Instance); },
             () => { new WitheredBonnie(Instance); }

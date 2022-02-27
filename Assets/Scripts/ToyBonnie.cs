@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using Rng = UnityEngine.Random;
 
-class ToyBonnie : Animatronic
+class ToyBonnie : Animatronic, ITP
 {
     private int _currentCam;
 
@@ -23,12 +23,14 @@ class ToyBonnie : Animatronic
         Instance.SetCameraFlag(_currentCam == 6 ? CameraFlag.ToyBonnieCam6 : CameraFlag.ToyBonnieCam7, true);
         Instance.PlaySound(Constants.SOUND_BANG2);
         Instance.Log("Toy Bonnie is now at cam {0}.", _currentCam);
-        yield return WaitFor(Rng.Range(5f, 15f));
+        yield return WaitFor(Rng.Range(10f, 20f));
+        if(ForcedSolve)
+            Instance.CloseDoor(_currentCam == 6 ? UltraCustomNightScript.DoorPosition.Left : UltraCustomNightScript.DoorPosition.Right);
         if(Instance.GetDoorClosed(_currentCam == 6 ? UltraCustomNightScript.DoorPosition.Left : UltraCustomNightScript.DoorPosition.Right))
             Instance.PlaySound(Constants.SOUND_BANG);
         else
         {
-            Instance.Strike();
+            Strike();
             Instance.Log("Strike from Toy Bonnie!");
         }
         Instance.SetCameraFlag(_currentCam == 6 ? CameraFlag.ToyBonnieCam6 : CameraFlag.ToyBonnieCam7, false);
@@ -36,5 +38,16 @@ class ToyBonnie : Animatronic
         yield return WaitFor(Rng.Range(2f, 3f));
 
         Instance.AddCoroutineNow(WaitToMove());
+    }
+
+    public IEnumerable HandleTwitchCommand(string command)
+    {
+        yield break;
+    }
+
+    public IEnumerable HandleTwitchForcedSolve()
+    {
+        ForcedSolve = true;
+        yield break;
     }
 }

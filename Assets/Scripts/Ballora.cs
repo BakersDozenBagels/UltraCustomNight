@@ -2,7 +2,7 @@
 using UnityEngine;
 using Rng = UnityEngine.Random;
 
-public class Ballora : Animatronic
+public class Ballora : Animatronic, ITP
 {
     private BalloraScript _script;
 
@@ -41,10 +41,13 @@ public class Ballora : Animatronic
             yield return null;
         }
 
+        if(ForcedSolve)
+            Instance.CloseDoor(left ? UltraCustomNightScript.DoorPosition.Left : UltraCustomNightScript.DoorPosition.Right);
+
         if(!Instance.GetDoorClosed(left ? UltraCustomNightScript.DoorPosition.Left : UltraCustomNightScript.DoorPosition.Right))
         {
             Instance.Log("Strike from Ballora!");
-            Instance.Strike();
+            Strike();
         }
         else
         {
@@ -64,5 +67,16 @@ public class Ballora : Animatronic
         yield return WaitFor(Rng.Range(2f, 3f));
 
         Instance.AddCoroutineNow(WaitToMove());
+    }
+
+    public IEnumerable HandleTwitchCommand(string command)
+    {
+        yield break;
+    }
+
+    public IEnumerable HandleTwitchForcedSolve()
+    {
+        ForcedSolve = true;
+        yield break;
     }
 }

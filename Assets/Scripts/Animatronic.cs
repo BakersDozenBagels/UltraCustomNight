@@ -6,6 +6,7 @@ using UnityEngine;
 public abstract class Animatronic
 {
     protected float TimeAdjust { get { return Instance.TimeAdjust; } }
+    protected bool ForcedSolve { get; set; }
 
     /// <summary>
     /// Backing field for <see cref="Instance"/>. Use that instead.
@@ -93,6 +94,60 @@ public abstract class Animatronic
                 // return new DummyAnimatronic(instance);
                 throw new ArgumentException("Unexpected Animatronic Name!", "name");
         }
+    }
+
+    private string GetName()
+    {
+        if(this is FreddyFazbear)
+            return "Freddy Fazbear";
+        if(this is Bonnie)
+            return "Bonnie";
+        if(this is Chica)
+            return "Chica";
+        if(this is Foxy)
+            return "Foxy";
+        if(this is ToyFreddy)
+            return "Toy Freddy";
+        if(this is ToyChica)
+            return "Toy Chica";
+        if(this is ToyBonnie)
+            return "Toy Bonnie";
+        if(this is Mangle)
+            return "Mangle";
+        if(this is NightmareFreddy)
+            return "Nightmare Freddy";
+        if(this is GoldenFreddy)
+            return "Nightmare Bonnie";
+        if(this is FuntimeFoxy)
+            return "Nightmare Chica";
+        if(this is NightmareFoxy)
+            return "Nightmare Foxy";
+        if(this is CircusBaby)
+            return "CircusBaby";
+        if(this is NightmareBB)
+            return "Ballora";
+        if(this is FuntimeFreddy)
+            return "Funtime Freddy";
+        if(this is Ballora)
+            return "Funtime Foxy";
+        if(this is Springtrap)
+            return "Springtrap";
+        if(this is ThePuppet)
+            return "The Puppet";
+        if(this is BB && (this as BB)._jj)
+            return "JJ";
+        else if(this is BB)
+            return "BB";
+        if(this is NightmareBonnie)
+            return "Nightmare_Bonnie";
+        if(this is Lolbit)
+            return "Lolbit";
+        throw new InvalidOperationException("Unexpected Animatronic Type!");
+    }
+
+    protected void Strike()
+    {
+        Instance.Strike(GetName());
     }
 
     //public class DummyAnimatronic : Animatronic

@@ -2,7 +2,7 @@
 using UnityEngine;
 using Rng = UnityEngine.Random;
 
-public class FuntimeFreddy : Animatronic
+public class FuntimeFreddy : Animatronic, ITP
 {
     public FuntimeFreddy(UltraCustomNightScript instance) : base(instance)
     {
@@ -33,11 +33,13 @@ public class FuntimeFreddy : Animatronic
             dir += 1;
             dir %= 3;
         }
-        yield return WaitFor(Rng.Range(5f, 15f));
+        yield return new WaitForSeconds(15f - 1.724f);
+        if(ForcedSolve)
+            Instance.CloseDoor(dir == 0 ? UltraCustomNightScript.DoorPosition.Left : dir == 1 ? UltraCustomNightScript.DoorPosition.Front : UltraCustomNightScript.DoorPosition.Right);
         if(!Instance.GetDoorClosed(dir == 0 ? UltraCustomNightScript.DoorPosition.Left : dir == 1 ? UltraCustomNightScript.DoorPosition.Front : UltraCustomNightScript.DoorPosition.Right))
         {
             Instance.Log("Strike from Funtime Freddy!");
-            Instance.Strike();
+            Strike();
         }
         else
         {
@@ -47,5 +49,16 @@ public class FuntimeFreddy : Animatronic
         yield return WaitFor(Rng.Range(2f, 3f));
 
         Instance.AddCoroutineNow(WaitToMove());
+    }
+
+    public IEnumerable HandleTwitchCommand(string command)
+    {
+        yield break;
+    }
+
+    public IEnumerable HandleTwitchForcedSolve()
+    {
+        ForcedSolve = true;
+        yield break;
     }
 }

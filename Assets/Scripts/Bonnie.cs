@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using Rng = UnityEngine.Random;
 
-class Bonnie : Animatronic
+class Bonnie : Animatronic, ITP
 {
     private int _currentState = 3;
     private bool _alarmOn;
@@ -40,10 +40,10 @@ class Bonnie : Animatronic
                 Instance.PlaySound(Constants.SOUND_NIGHTMARE_BONNIE_BANG3);
                 _alarmOn = false;
                 yield return WaitFor(15f);
-                if(!_alarmOn)
+                if(!_alarmOn && !ForcedSolve)
                 {
                     Instance.Log("Strike from Bonnie!");
-                    Instance.Strike();
+                    Strike();
                 }
                 _currentState = 3;
                 break;
@@ -53,5 +53,16 @@ class Bonnie : Animatronic
         yield return WaitFor(Rng.Range(2f, 3f));
 
         Instance.AddCoroutineNow(WaitToMove());
+    }
+
+    public IEnumerable HandleTwitchCommand(string command)
+    {
+        yield break;
+    }
+
+    public IEnumerable HandleTwitchForcedSolve()
+    {
+        ForcedSolve = true;
+        yield break;
     }
 }

@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEngine;
 using Rng = UnityEngine.Random;
 
-public class FuntimeFoxy : Animatronic
+public class FuntimeFoxy : Animatronic, ITP
 {
     DateTime _sign;
 
@@ -12,8 +12,6 @@ public class FuntimeFoxy : Animatronic
         Instance.Log("Funtime Foxy is coming to attack! Watch cam 2 carefully.");
         Instance.AddCoroutineNow(WaitForTime());
         Instance.SetCameraFlag(CameraFlag.FuntimeFoxyCam2, true);
-
-        
     }
 
     private IEnumerator WaitForTime()
@@ -25,12 +23,31 @@ public class FuntimeFoxy : Animatronic
 
         yield return new WaitUntil(() => DateTime.Now.Hour == _sign.Hour && DateTime.Now.Minute == _sign.Minute);
 
+        if(ForcedSolve)
+        {
+            Instance.CloseDoor(UltraCustomNightScript.DoorPosition.Front);
+            Instance.Cams.SetCam(2);
+            Instance.LastCamSelected = 2;
+            Instance.OnCameraChange(true);
+        }
+
         if(Instance.LastCamSelected != 2)
         {
             Instance.Log("Strike from Funtime Foxy!");
-            Instance.Strike();
+            Strike();
         }
 
         Instance.AddCoroutineNow(WaitForTime());
+    }
+
+    public IEnumerable HandleTwitchCommand(string command)
+    {
+        yield break;
+    }
+
+    public IEnumerable HandleTwitchForcedSolve()
+    {
+        ForcedSolve = true;
+        yield break;
     }
 }

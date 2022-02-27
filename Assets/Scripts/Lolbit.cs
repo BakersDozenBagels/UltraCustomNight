@@ -44,7 +44,7 @@ public class Lolbit : Animatronic
         {
             _state = 0;
             Instance.Log("Strike from Lolbit!");
-            Instance.Strike();
+            Strike();
         }
         _lol.SetActive(false);
         Instance.AddCoroutineNow(Move());

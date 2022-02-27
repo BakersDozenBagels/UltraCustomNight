@@ -44,7 +44,7 @@ class NightmareBonnie : Animatronic
                             Instance.PlaySound(Constants.SOUND_BANG);
                         else
                         {
-                            Instance.Strike();
+                            Strike();
                             Instance.Log("Strike from Nightmare Bonnie!");
                         }
                         Instance.SetCameraFlag(CameraFlag.ChicaCam3Attack, false);

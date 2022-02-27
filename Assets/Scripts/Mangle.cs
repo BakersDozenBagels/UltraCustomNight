@@ -24,7 +24,7 @@ class Mangle : Animatronic
                 _time += Time.deltaTime;
             if(_time >= Instance.MangleThreshold)
             {
-                Instance.Strike();
+                Strike();
                 _time = 0f;
                 Instance.Log("Strike from Mangle!");
             }

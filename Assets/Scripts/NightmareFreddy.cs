@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using Rng = UnityEngine.Random;
 
-class NightmareFreddy : Animatronic
+class NightmareFreddy : Animatronic, ITP
 {
     private int _currentCam = 8;
 
@@ -59,10 +59,12 @@ class NightmareFreddy : Animatronic
                         Instance.PlaySound(Constants.SOUND_NIGHTMARE_FREDDY_LAUGH);
 
                         yield return WaitFor(Rng.Range(5f, 15f));
+                        if(ForcedSolve)
+                            Instance.CloseDoor(UltraCustomNightScript.DoorPosition.VFront);
                         if(Instance.GetDoorClosed(UltraCustomNightScript.DoorPosition.VLeft))
                         {
-                            Instance.Strike();
-                            Instance.Log("Strike front Nightmare Freddy!");
+                            Strike();
+                            Instance.Log("Strike from Nightmare Freddy!");
                         }
                         else
                         {
@@ -107,10 +109,12 @@ class NightmareFreddy : Animatronic
                         Instance.PlaySound(Constants.SOUND_NIGHTMARE_FREDDY_LAUGH);
 
                         yield return WaitFor(Rng.Range(5f, 15f));
+                        if(ForcedSolve)
+                            Instance.CloseDoor(UltraCustomNightScript.DoorPosition.VFront);
                         if(Instance.GetDoorClosed(UltraCustomNightScript.DoorPosition.VRight))
                         {
-                            Instance.Strike();
-                            Instance.Log("Strike front Nightmare Freddy!");
+                            Strike();
+                            Instance.Log("Strike from Nightmare Freddy!");
                         }
                         else
                         {
@@ -129,5 +133,16 @@ class NightmareFreddy : Animatronic
         yield return WaitFor(Rng.Range(2f, 3f));
 
         Instance.AddCoroutineNow(WaitToMove());
+    }
+
+    public IEnumerable HandleTwitchCommand(string command)
+    {
+        yield break;
+    }
+
+    public IEnumerable HandleTwitchForcedSolve()
+    {
+        ForcedSolve = true;
+        yield break;
     }
 }

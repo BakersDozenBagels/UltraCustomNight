@@ -24,14 +24,34 @@ class GoldenFreddy : Animatronic
             Instance.Log("Golden Freddy is attacking!");
             Instance.SetGoldenFreddy(true);
             float time = Time.time;
-            while(Time.time < time + 2f * TimeAdjust)
+            while(Time.time < time + 5f * TimeAdjust)
             {
                 yield return null;
                 if(!_attacking)
                     yield break;
             }
-            Instance.Log("Strike from Golden Freddy!");
-            Instance.Strike();
+            if(ForcedSolve)
+            {
+                Instance.Cams.SetCam();
+                Instance.LastCamSelected = 0;
+                Instance.OnCameraChange(false);
+            }
+            else
+            {
+                Instance.Log("Strike from Golden Freddy!");
+                Strike();
+            }
         }
+    }
+
+    public IEnumerable HandleTwitchCommand(string command)
+    {
+        yield break;
+    }
+
+    public IEnumerable HandleTwitchForcedSolve()
+    {
+        ForcedSolve = true;
+        yield break;
     }
 }

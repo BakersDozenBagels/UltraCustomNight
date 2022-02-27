@@ -52,7 +52,7 @@ public class CharacterSelectable : KMSelectable
         }
         set
         {
-            if(_currentState == State.ForcedOn || _currentState == State.ForcedOff)
+            if(value != State.ForcedOff && (_currentState == State.ForcedOn || _currentState == State.ForcedOff))
                 return;
             _currentState = value;
             SetOutlineColor();

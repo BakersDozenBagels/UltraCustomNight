@@ -12,7 +12,7 @@ public class CircusBaby : Animatronic
 
     public CircusBaby(UltraCustomNightScript instance) : base(instance)
     {
-        Instance.Log("Circus Baby is coming to attack! Watch out to your left.");
+        Instance.Log("Scrap Baby is coming to attack! Watch out to your left.");
 #if !UNITY_EDITOR
         Instance.AddCoroutineNow(WaitToMove());
         GameObject o = Instance.PublicInstantiate(Instance.CircusBabyPrefab);
@@ -39,15 +39,15 @@ public class CircusBaby : Animatronic
 
     private IEnumerator Move()
     {
-        Instance.Log("Circus Baby is now active.");
+        Instance.Log("Scrap Baby is now active.");
         _script.Inactive.SetActive(false);
         _script.Active.SetActive(true);
-        yield return new WaitForSeconds(60f);
+        yield return new WaitForSeconds(30f);
 
         if((int)_info.GetValue(_bomb, new object[0]) == 0)
         {
-            Instance.Log("Strike from Circus Baby!");
-            Instance.Strike();
+            Instance.Log("Strike from Scrap Baby!");
+            Strike();
         }
 
         _script.Inactive.SetActive(true);

@@ -55,7 +55,7 @@ class ThePuppet : Animatronic
                 if(opac >= 1f)
                 {
                     Instance.Log("Strike from The Puppet!");
-                    Instance.Strike();
+                    Strike();
                     break;
                 }
             }

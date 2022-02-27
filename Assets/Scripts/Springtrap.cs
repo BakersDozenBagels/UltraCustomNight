@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using Rng = UnityEngine.Random;
 
-class Springtrap : Animatronic
+class Springtrap : Animatronic, ITP
 {
     private int _currentCam = 10;
 
@@ -50,11 +50,13 @@ class Springtrap : Animatronic
                 _currentCam = 10;
                 Instance.SetCameraFlag(CameraFlag.SpringtrapCam11, false);
                 yield return WaitFor(Rng.Range(5f, 15f));
+                if(ForcedSolve)
+                    Instance.CloseDoor(UltraCustomNightScript.DoorPosition.VRight);
                 if(Instance.GetDoorClosed(UltraCustomNightScript.DoorPosition.VRight))
                     Instance.PlaySound(Constants.SOUND_BANG);
                 else
                 {
-                    Instance.Strike();
+                    Strike();
                     Instance.Log("Strike from Springtrap!");
                 }
                 Instance.SetCameraFlag(CameraFlag.SpringtrapCam10, true);
@@ -65,5 +67,16 @@ class Springtrap : Animatronic
         yield return WaitFor(Rng.Range(2f, 3f));
 
         Instance.AddCoroutineNow(WaitToMove());
+    }
+
+    public IEnumerable HandleTwitchCommand(string command)
+    {
+        yield break;
+    }
+
+    public IEnumerable HandleTwitchForcedSolve()
+    {
+        ForcedSolve = true;
+        yield break;
     }
 }

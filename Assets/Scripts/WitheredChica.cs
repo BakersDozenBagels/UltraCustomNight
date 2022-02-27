@@ -12,6 +12,11 @@ public class WitheredChica : Animatronic
     private IEnumerator Move()
     {
         yield return WaitFor(Rng.Range(30f, 60f));
+        if(Instance.LastCamSelected == 0)
+        {
+            Instance.AddCoroutineNow(Move());
+            yield break;
+        }
 
         Instance.Log("Withered Chica is attacking!");
         int cam = Instance.LastCamSelected < 8 ? Rng.Range(1, 8) : Rng.Range(8, 12);

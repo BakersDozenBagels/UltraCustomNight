@@ -2,7 +2,7 @@
 using UnityEngine;
 using Rng = UnityEngine.Random;
 
-class Foxy : Animatronic
+class Foxy : Animatronic, ITP
 {
     private int _currentState = 1;
 
@@ -39,11 +39,13 @@ class Foxy : Animatronic
                 Instance.SetCameraFlag(CameraFlag.FoxyCam3State4, true);
                 _currentState = 4;
                 yield return WaitFor(Rng.Range(5f, 15f));
+                if(ForcedSolve)
+                    Instance.CloseDoor(UltraCustomNightScript.DoorPosition.Front);
                 if(Instance.GetDoorClosed(UltraCustomNightScript.DoorPosition.Front))
                     Instance.PlaySound(Constants.SOUND_BANG);
                 else
                 {
-                    Instance.Strike();
+                    Strike();
                     Instance.Log("Strike from Foxy!");
                 }
                 Instance.SetCameraFlag(CameraFlag.FoxyCam3State4, false);
@@ -68,5 +70,16 @@ class Foxy : Animatronic
             if(Instance.LastCamSelected == 3)
                 start -= Time.deltaTime;
         }
+    }
+
+    public IEnumerable HandleTwitchCommand(string command)
+    {
+        yield break;
+    }
+
+    public IEnumerable HandleTwitchForcedSolve()
+    {
+        ForcedSolve = true;
+        yield break;
     }
 }

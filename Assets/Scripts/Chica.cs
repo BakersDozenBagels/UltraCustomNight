@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using Rng = UnityEngine.Random;
 
-class Chica : Animatronic
+class Chica : Animatronic, ITP
 {
     private int _currentCam = 2;
 
@@ -41,11 +41,13 @@ class Chica : Animatronic
                 _currentCam = 0;
                 Instance.SetCameraFlag(CameraFlag.BonnieCam7, false);
                 yield return WaitFor(Rng.Range(5f, 10f));
+                if(ForcedSolve)
+                    Instance.CloseDoor(UltraCustomNightScript.DoorPosition.Right);
                 if(Instance.GetDoorClosed(UltraCustomNightScript.DoorPosition.Right))
                     Instance.PlaySound(Constants.SOUND_BANG);
                 else
                 {
-                    Instance.Strike();
+                    Strike();
                     Instance.Log("Strike from Chica!");
                 }
                 _currentCam = 2;
@@ -57,5 +59,16 @@ class Chica : Animatronic
         yield return WaitFor(Rng.Range(2f, 3f));
 
         Instance.AddCoroutineNow(WaitToMove());
+    }
+
+    public IEnumerable HandleTwitchCommand(string command)
+    {
+        yield break;
+    }
+
+    public IEnumerable HandleTwitchForcedSolve()
+    {
+        ForcedSolve = true;
+        yield break;
     }
 }

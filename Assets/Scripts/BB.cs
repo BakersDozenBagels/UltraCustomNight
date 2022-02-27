@@ -6,7 +6,7 @@ using Rng = UnityEngine.Random;
 
 class BB : Animatronic
 {
-    private bool _jj;
+    public bool _jj;
     private static readonly List<GameObject> _selected = new List<GameObject>();
     private KMBombModule _currentModule;
     private bool _handled, _removed;
@@ -30,7 +30,7 @@ class BB : Animatronic
             if(_jj)
             {
                 Instance.Log("Strike from JJ!");
-                Instance.Strike();
+                Strike();
                 _handled = true;
             }
             else
@@ -93,7 +93,7 @@ class BB : Animatronic
         if(!_jj && !_removed)
         {
             Instance.Log("Strike from BB!");
-            Instance.Strike();
+            Strike();
         }
 
         if(!_removed)
