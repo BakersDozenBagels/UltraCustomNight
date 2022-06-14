@@ -240,33 +240,28 @@ public partial class UltraCustomNightScript : MonoBehaviour
             foreach(CharacterSelectable sel in GetComponentsInChildren<CharacterSelectable>())
                 if((!_mangleAllowed || IsZenModeActive) && sel.gameObject.name == "Mangle")
                     sel.CurrentState = CharacterSelectable.State.ForcedOff;
-        };
-    }
 
-    private IEnumerator StartPlusOne()
-    {
-        yield return null;
+            foreach(CharacterSelectable sel in GetComponentsInChildren<CharacterSelectable>())
+            {
+                bool IsVrEnabled = KtaneVRChecker.VRC.IsEnabled;
 
-        foreach(CharacterSelectable sel in GetComponentsInChildren<CharacterSelectable>())
-        {
-            bool IsVrEnabled = KtaneVRChecker.VRC.IsEnabled;
+                if((!_mangleAllowed || IsZenModeActive || IsTPActive) && sel.gameObject.name == "Mangle")
+                    sel.CurrentState = CharacterSelectable.State.ForcedOff;
+                if((!_circusBabyAllowed || IsTPActive || IsVrEnabled) && sel.gameObject.name == "CircusBaby")
+                    sel.CurrentState = CharacterSelectable.State.ForcedOff;
+                if(!_funtimeFreddyAllowed && sel.gameObject.name == "FuntimeFreddy")
+                    sel.CurrentState = CharacterSelectable.State.ForcedOff;
+                if(!_balloraAllowed && sel.gameObject.name == "FuntimeFoxy")
+                    sel.CurrentState = CharacterSelectable.State.ForcedOff;
+                if((!_nightmareBBAllowed || IsTPActive || IsVrEnabled) && sel.gameObject.name == "Ballora")
+                    sel.CurrentState = CharacterSelectable.State.ForcedOff;
+                if((IsVrEnabled || IsTPActive) && sel.gameObject.name == "ThePuppet")
+                    sel.CurrentState = CharacterSelectable.State.ForcedOff;
+                if(IsTPActive && (sel.gameObject.name == "BB" || sel.gameObject.name == "JJ"))
+                    sel.CurrentState = CharacterSelectable.State.ForcedOff;
 
-            sel.OnUpdateState += GenerateToggle(sel);
-            if((!_mangleAllowed || IsZenModeActive || IsTPActive) && sel.gameObject.name == "Mangle")
-                sel.CurrentState = CharacterSelectable.State.ForcedOff;
-            if((!_circusBabyAllowed || IsTPActive || IsVrEnabled) && sel.gameObject.name == "CircusBaby")
-                sel.CurrentState = CharacterSelectable.State.ForcedOff;
-            if(!_funtimeFreddyAllowed && sel.gameObject.name == "FuntimeFreddy")
-                sel.CurrentState = CharacterSelectable.State.ForcedOff;
-            if(!_balloraAllowed && sel.gameObject.name == "FuntimeFoxy")
-                sel.CurrentState = CharacterSelectable.State.ForcedOff;
-            if((!_nightmareBBAllowed || IsTPActive || IsVrEnabled) && sel.gameObject.name == "Ballora")
-                sel.CurrentState = CharacterSelectable.State.ForcedOff;
-            if((IsVrEnabled || IsTPActive) && sel.gameObject.name == "ThePuppet")
-                sel.CurrentState = CharacterSelectable.State.ForcedOff;
-            if(IsTPActive && (sel.gameObject.name == "BB" || sel.gameObject.name == "JJ"))
-                sel.CurrentState = CharacterSelectable.State.ForcedOff;
-        }
+                sel.OnUpdateState += GenerateToggle(sel);
+            }
 
 #if !UNITY_EDITOR
         if(!IsZenModeActive)
@@ -277,6 +272,12 @@ public partial class UltraCustomNightScript : MonoBehaviour
             }
         }
 #endif
+        };
+    }
+
+    private IEnumerator StartPlusOne()
+    {
+        yield return null;
 
         _camScreen.SetActive(false);
         _ventScreen.SetActive(false);

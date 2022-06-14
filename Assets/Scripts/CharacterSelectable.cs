@@ -54,10 +54,11 @@ public class CharacterSelectable : KMSelectable
         {
             if(value != State.ForcedOff && (_currentState == State.ForcedOn || _currentState == State.ForcedOff))
                 return;
+            State prev = _currentState;
             _currentState = value;
             SetOutlineColor();
 
-            if(OnUpdateState != null && value != State.ForcedOff)
+            if(OnUpdateState != null && !(value == State.ForcedOff && prev == State.Off))
                 OnUpdateState(value == State.ForcedOn || value == State.On);
         }
     }
