@@ -141,7 +141,7 @@ public partial class UltraCustomNightScript : MonoBehaviour
     /// </summary>
     [HideInInspector]
 #if UNITY_EDITOR
-    public float TimeAdjust = 0.5f;
+    public float TimeAdjust = 21f; //0.5f;
 #else
     public float TimeAdjust = 4.5f;
 #endif
@@ -237,9 +237,6 @@ public partial class UltraCustomNightScript : MonoBehaviour
         _module.OnActivate += () =>
         {
             IsZenModeActive = BombInfo.GetTime() < 1f;
-            foreach(CharacterSelectable sel in GetComponentsInChildren<CharacterSelectable>())
-                if((!_mangleAllowed || IsZenModeActive) && sel.gameObject.name == "Mangle")
-                    sel.CurrentState = CharacterSelectable.State.ForcedOff;
 
             foreach(CharacterSelectable sel in GetComponentsInChildren<CharacterSelectable>())
             {

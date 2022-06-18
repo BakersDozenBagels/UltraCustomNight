@@ -122,5 +122,10 @@ public partial class UltraCustomNightScript
         foreach(ITP tp in _TPHandlers)
             foreach(object o in tp.HandleTwitchForcedSolve())
                 yield return o;
+        while(!_isSolved)
+        {
+            GetComponentsInChildren<CameraSelectable>().Where(s => s.gameObject.activeInHierarchy).PickRandom().OnInteract();
+            yield return new WaitForSeconds(UnityEngine.Random.Range(6f, 15f) * TimeAdjust);
+        }
     }
 }
