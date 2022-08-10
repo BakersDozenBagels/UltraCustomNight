@@ -123,7 +123,7 @@ public abstract class Animatronic
         if(this is NightmareFoxy)
             return "Nightmare Foxy";
         if(this is CircusBaby)
-            return "CircusBaby";
+            return "Circus Baby";
         if(this is NightmareBB)
             return "Ballora";
         if(this is FuntimeFreddy)
@@ -139,7 +139,7 @@ public abstract class Animatronic
         else if(this is BB)
             return "BB";
         if(this is NightmareBonnie)
-            return "Nightmare_Bonnie";
+            return "Nightmare Bonnie";
         if(this is Lolbit)
             return "Lolbit";
         throw new InvalidOperationException("Unexpected Animatronic Type!");
