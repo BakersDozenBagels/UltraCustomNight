@@ -376,7 +376,7 @@ public partial class UltraCustomNightScript : MonoBehaviour
     /// Starts a Coroutine to be ran when the module is ready.
     /// </summary>
     /// <remarks>
-    /// Yield return <code>true</code> to move to the next item in the queue.
+    /// Yield return <see langword="true">true</see> to move to the next item in the queue.
     /// </remarks>
     /// <param name="routine">The Coroutine to start.</param>
     public void AddCoroutineToQueue(IEnumerator routine)

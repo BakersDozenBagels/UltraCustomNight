@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 /// <summary>
-/// Encapsulates the funtionality of a single enemy on and Ultra Custom Night module.
+/// Encapsulates the funtionality of a single enemy on an Ultra Custom Night module.
 /// </summary>
 public abstract class Animatronic
 {
